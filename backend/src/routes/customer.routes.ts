@@ -9,6 +9,8 @@ import {
   getCustomerByPhone,
   addSpentAmount,
   getCustomerTransactions,
+  getCustomerCampaigns,
+  getCustomerVouchers,
 } from "../controllers/customer.controller";
 import { authenticateJWT, authorizeRole } from "../middlewares/auth.middleware";
 
@@ -28,5 +30,6 @@ router.get("/:id/transactions", getCustomerTransactions);
 
 // tra cứu số điện thoại
 router.get("/phone/:phone", getCustomerByPhone);
-
+router.get("/:id/campaigns", getCustomerCampaigns);
+router.get("/:id/vouchers", getCustomerVouchers);
 export default router;

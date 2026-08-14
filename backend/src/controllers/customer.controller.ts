@@ -3,6 +3,7 @@ import { customerService } from "../services/customer.service";
 import { transactionService } from "../services/transaction.service";
 import { tierService } from "../services/tier.service";
 import prisma from "../prisma";
+import { tryCatch } from "bullmq";
 interface CustomerParams {
   id: string;
 }
@@ -11,18 +12,17 @@ export const getCustomers = async (
   res: Response,
 ): Promise<void> => {
   try {
-
     // Thu thập tất cả query params
     const filters = {
       is_deleted: req.query.is_deleted === "true",
       email: req.query.email as string,
-       customer_id: req.query.customer_id as string,
+      customer_id: req.query.customer_id as string,
       full_name: req.query.full_name as string,
       status: req.query.status as string,
-      segment_id: req.query.segment_id as string // Nếu muốn lọc theo phân loại
+      segment_id: req.query.segment_id as string, // Nếu muốn lọc theo phân loại
     };
 
-    // Truyền object filter xuống service 
+    // Truyền object filter xuống service
     const customers = await customerService.getAllCustomers(filters);
 
     res.status(200).json({ data: customers });
@@ -223,11 +223,51 @@ export const getCustomerTransactions = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const transactions = await transactionService.getTransactionsByCustomerId(req.params.id as string);
+    const transactions = await transactionService.getTransactionsByCustomerId(
+      req.params.id as string,
+    );
     res.status(200).json({ data: transactions });
   } catch (error: unknown) {
     res.status(500).json({
       message: error instanceof Error ? error.message : String(error),
+    });
+  }
+};
+
+export const getCustomerCampaigns = async (
+  req: Request<CustomerParams>,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const history = await customerService.getCustomerCampaignHistory(id);
+
+    res.status(200).json({
+      data: history,
+      message: "Lấy lịch sử chiến dịch thành công",
+    });
+  } catch (error: unknown) {
+    res.status(500).json({
+      error: error instanceof Error ? error.message : "Internal server error",
+    });
+  }
+};
+
+export const getCustomerVouchers = async (
+  req: Request<CustomerParams>,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const vouchers = await customerService.getCustomerVouchersHistory(id);
+    // Mảng vouchers có voucher_id (BigInt) nên polyfill ở index.ts của dự án sẽ tự động convert sang String
+    res.status(200).json({
+      data: vouchers,
+      message: "Lấy lịch sử voucher thành công",
+    });
+  } catch (error: unknown) {
+    res.status(500).json({
+      error: error instanceof Error ? error.message : "Internal server error",
     });
   }
 };

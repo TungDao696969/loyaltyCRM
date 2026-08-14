@@ -49,6 +49,10 @@ export class ReportService {
     // 4. Store Performance (Top 5 by Transaction count)
     const storeTransactions = await prisma.pointTransaction.groupBy({
       by: ['store_id'],
+      where: {
+        store_id: { not: null },
+        transaction_type: 'EARN'
+      },
       _count: {
         transaction_id: true
       },

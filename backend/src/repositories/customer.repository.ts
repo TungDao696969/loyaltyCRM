@@ -1,6 +1,8 @@
 import prisma from "../prisma";
 import { Prisma, Customer } from "@prisma/client";
 import { CustomerFilter } from "../types/customers";
+import { ppid } from "process";
+import { includes } from "zod";
 export class CustomerRepository {
   async findAll(filters?: CustomerFilter): Promise<Customer[]> {
     // Khởi tạo điều kiện mặc định
@@ -52,12 +54,12 @@ export class CustomerRepository {
   async findById(id: bigint): Promise<any> {
     return prisma.customer.findUnique({
       where: { customer_id: id },
-      include: { 
+      include: {
         tier: true,
         vouchers: {
           where: { status: "active" },
-          orderBy: { expired_at: "asc" }
-        }
+          orderBy: { expired_at: "asc" },
+        },
       },
     });
   }
@@ -65,12 +67,12 @@ export class CustomerRepository {
   async findByPhone(phone: string): Promise<Customer | null> {
     return prisma.customer.findUnique({
       where: { phone_number: phone },
-      include: { 
+      include: {
         tier: true,
         vouchers: {
           where: { status: "active" },
-          orderBy: { expired_at: "asc" }
-        }
+          orderBy: { expired_at: "asc" },
+        },
       },
     });
   }
@@ -102,6 +104,42 @@ export class CustomerRepository {
     return prisma.customer.update({
       where: { customer_id: id },
       data: { is_deleted: false },
+    });
+  }
+
+  async getCampaignHistory(customerId: bigint) {
+    return await prisma.campaignRecipient.findMany({
+      where: {
+        customer_id: customerId,
+      },
+
+      include: {
+        campaign: true,
+      },
+
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+  }
+
+  async getCustomerVouchers(customerId: bigint) {
+    return await prisma.voucher.findMany({
+      where: {
+        customer_id: customerId,
+      },
+      include: {
+        campaign: {
+          select: {
+            campaign_id: true,
+            campaign_name: true, // Lấy tên chiến dịch để dễ hiển thị
+          },
+        },
+      },
+      orderBy: [
+        { status: "asc" }, // Sắp xếp theo trạng thái (vd: active lên trước)
+        { expired_at: "asc" }, // Sau đó sắp xếp theo ngày hết hạn
+      ],
     });
   }
 }

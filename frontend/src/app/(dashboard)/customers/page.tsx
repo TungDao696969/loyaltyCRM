@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import CustomerCampaignHistory from "@/components/customer/CustomerCampaignHistory";
+import CustomerVoucherHistory from "@/components/customer/CustomerVoucherHistory";
 import { useCustomers } from "@/hooks/useCustomers";
 import { useCustomerTransactions } from "@/hooks/useTransactions";
 import { useCustomerOrders } from "@/hooks/useOrders";
@@ -38,7 +40,7 @@ export default function CustomersPage() {
   const [viewCustomer, setViewCustomer] = useState<Customer | null>(null);
   const [viewTransaction, setViewTransaction] = useState<Transaction | null>(null);
   const [viewOrder, setViewOrder] = useState<Order | null>(null);
-  const [detailTab, setDetailTab] = useState<"points" | "orders">("points");
+  const [detailTab, setDetailTab] = useState<"points" | "orders" | "campaigns">("points");
   const [filterName, setFilterName] = useState("");
   const [filterPhone, setFilterPhone] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -544,9 +546,21 @@ export default function CustomersPage() {
                   >
                     Lịch sử Hóa đơn
                   </button>
+                  <button
+                    onClick={() => setDetailTab("campaigns")}
+                    className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${detailTab === "campaigns" ? "border-indigo-500 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+                  >
+                    Chiến dịch
+                  </button>
+                  <button
+                    onClick={() => setDetailTab("vouchers")}
+                    className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${detailTab === "vouchers" ? "border-indigo-500 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-700"}`}
+                  >
+                    Voucher
+                  </button>
                 </div>
                 
-                {detailTab === "points" ? (
+                {detailTab === "points" && (
                   <div className="max-h-[250px] overflow-y-auto rounded-xl border border-slate-200">
                   <Table>
                     <TableHeader className="bg-slate-50 sticky top-0">
@@ -632,7 +646,8 @@ export default function CustomersPage() {
                     </TableBody>
                   </Table>
                 </div>
-                ) : (
+                )}
+                {detailTab === "orders" && (
                   <div className="max-h-[250px] overflow-y-auto rounded-xl border border-slate-200">
                     <Table>
                       <TableHeader className="bg-slate-50 sticky top-0">
@@ -667,6 +682,12 @@ export default function CustomersPage() {
                       </TableBody>
                     </Table>
                   </div>
+                )}
+                {detailTab === "campaigns" && viewCustomer && (
+                  <CustomerCampaignHistory customerId={viewCustomer.customer_id} />
+                )}
+                {detailTab === "vouchers" && viewCustomer && (
+                  <CustomerVoucherHistory customerId={viewCustomer.customer_id} />
                 )}
               </div>
             </div>

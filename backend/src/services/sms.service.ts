@@ -18,10 +18,18 @@ export async function sendSMS(phone: string, message: string) {
     };
   }
 
+  // Định dạng lại số điện thoại Việt Nam (chuyển 0... thành +84...)
+  let formattedPhone = phone;
+  if (phone.startsWith("0")) {
+    formattedPhone = "+84" + phone.slice(1);
+  } else if (!phone.startsWith("+")) {
+    formattedPhone = "+" + phone;
+  }
+
   const result = await client.messages.create({
     body: message,
     from: process.env.TWILIO_PHONE_NUMBER || "+1234567890",
-    to: phone
+    to: formattedPhone
   });
 
   return {

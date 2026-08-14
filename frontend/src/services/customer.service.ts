@@ -1,6 +1,5 @@
 import axiosInstance from "@/lib/axios";
-import { Customer } from "@/types/customer";
-import { CustomerFilter } from "@/types/customer";
+import { Customer, CustomerFilter, CustomerCampaignHistory, CustomerVoucherHistory } from "@/types/customer";
 export const customerService = {
   getCustomers: async (
     params: CustomerFilter = {},
@@ -39,5 +38,15 @@ export const customerService = {
       amount,
     });
     return response.data.data;
+  },
+
+  getCustomerCampaignHistory: async (id: string): Promise<CustomerCampaignHistory[]> => {
+    const res = await axiosInstance.get(`/customers/${id}/campaigns`);
+    return res.data.data;
+  },
+
+  getCustomerVouchersHistory: async (id: string): Promise<CustomerVoucherHistory[]> => {
+    const res = await axiosInstance.get(`/customers/${id}/vouchers`);
+    return res.data.data;
   },
 };

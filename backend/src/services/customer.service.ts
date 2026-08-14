@@ -78,6 +78,32 @@ export class CustomerService {
   async getCustomerByPhone(phone: string) {
     return await customerRepository.findByPhone(phone);
   }
+
+  async getCustomerCampaignHistory(id: string) {
+    const customerId = BigInt(id);
+
+    // (Tuỳ chọn) Kiểm tra xem khách hàng có tồn tại không
+    const customer = await customerRepository.findById(customerId);
+
+    if (!customer) {
+      throw new Error("Customer not found");
+    }
+
+    // Lấy lịch sử chiến dịch
+    return await customerRepository.getCampaignHistory(customerId);
+  }
+
+  async getCustomerVouchersHistory(id: string) {
+    const customerId = BigInt(id);
+
+    // Kiểm tra xem khách hàng có tồn tại không
+    const customer = await customerRepository.findById(customerId);
+    if (!customer) {
+      throw new Error("Customer not found");
+    }
+    // Gọi repository lấy dữ liệu voucher
+    return await customerRepository.getCustomerVouchers(customerId);
+  }
 }
 
 export const customerService = new CustomerService();
