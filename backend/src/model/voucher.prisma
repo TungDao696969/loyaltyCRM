@@ -1,0 +1,18 @@
+model Voucher {
+  voucher_id      BigInt    @id @default(autoincrement())
+  voucher_code    String    @unique @db.VarChar(30)
+  customer_id     BigInt?
+  campaign_id     Int?
+  voucher_type    String?   @default("FIXED") @db.VarChar(20)
+  discount_value  Decimal   @db.Decimal(15, 2)
+  max_discount    Decimal?  @db.Decimal(15, 2)
+  min_order_value Decimal?  @db.Decimal(15, 2)
+  status          String?   @default("active") @db.VarChar(20)
+  expired_at      DateTime? @db.Timestamp(6)
+  used_at         DateTime? @db.Timestamp(6)
+
+  customer Customer? @relation(fields: [customer_id], references: [customer_id])
+  campaign Campaign? @relation(fields: [campaign_id], references: [campaign_id])
+
+  @@map("vouchers")
+}

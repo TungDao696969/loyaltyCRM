@@ -1,0 +1,17 @@
+model PointTransaction {
+  transaction_id   BigInt    @id @default(autoincrement())
+  customer_id      BigInt?
+  store_id         Int?
+  pos_invoice_code String    @db.VarChar(50)
+  transaction_type String    @db.VarChar(20)
+  order_amount     Decimal   @default(0) @db.Decimal(15, 2)
+  points           Int
+  balance_after    Int
+  is_offline_sync  Boolean?  @default(false)
+  created_at       DateTime? @default(now()) @db.Timestamp(6)
+
+  customer Customer? @relation(fields: [customer_id], references: [customer_id])
+  store    Store?    @relation(fields: [store_id], references: [id])
+
+  @@map("point_transactions")
+}

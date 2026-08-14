@@ -1,0 +1,13 @@
+model CustomerTier {
+  tier_id          Int       @id @default(autoincrement())
+  tier_code        String    @unique @db.VarChar(20)
+  tier_name        String    @db.VarChar(50)
+  min_spent_amount Decimal   @default(0) @db.Decimal(15, 2)
+  point_multiplier Decimal   @default(1.0) @db.Decimal(3, 2)
+  description      String?   @db.Text
+  created_at       DateTime? @default(now()) @db.Timestamp(6)
+
+  customers Customer[]
+
+  @@map("customer_tiers")
+}

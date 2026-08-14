@@ -1,0 +1,11 @@
+model OrderItem {
+    item_id      BigInt  @id @default(autoincrement())
+    order_id     BigInt
+    product_name String  @db.VarChar(255)
+    quantity     Int
+    price        Decimal @db.Decimal(15, 2)
+    subtotal     Decimal @db.Decimal(15, 2) // = quantity * price
+    order        Order   @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+
+    @@map("order_items")
+}

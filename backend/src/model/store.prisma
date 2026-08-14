@@ -1,0 +1,17 @@
+model Store {
+  id         Int         @id @default(autoincrement())
+  storeCode  String      @unique
+  storeName  String
+  address    String
+  apiKey     String      @unique
+  status     StoreStatus
+  createdAt  DateTime    @default(now())
+  is_deleted Boolean     @default(false)
+
+  transactions PointTransaction[]
+}
+
+enum StoreStatus {
+  ACTIVE
+  INACTIVE
+}

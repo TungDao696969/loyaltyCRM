@@ -1,0 +1,12 @@
+model LoyaltyRule {
+  rule_id         Int       @id @default(autoincrement())
+  rule_name       String    @db.VarChar(100)
+  rule_type       String    @db.VarChar(20)
+  conversion_rate Decimal   @db.Decimal(10, 4)
+  min_order_value Decimal?  @db.Decimal(15, 2)
+  start_date      DateTime  @db.Timestamp(6)
+  end_date        DateTime? @db.Timestamp(6)
+  is_active       Boolean?  @default(true)
+
+  @@map("loyalty_rules")
+}

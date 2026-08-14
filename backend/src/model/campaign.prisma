@@ -1,0 +1,15 @@
+model Campaign {
+  campaign_id      Int       @id @default(autoincrement())
+  campaign_name    String    @db.VarChar(150)
+  segment_id       Int?
+  channel          String    @db.VarChar(20)
+  message_template String?   @db.Text
+  status           String?   @default("draft") @db.VarChar(20)
+  scheduled_at     DateTime? @db.Timestamp(6)
+
+  segment  CustomerSegment? @relation(fields: [segment_id], references: [segment_id])
+  vouchers Voucher[]
+  recipients CampaignRecipient[]
+
+  @@map("campaigns")
+}
